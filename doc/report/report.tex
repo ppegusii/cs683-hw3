@@ -25,6 +25,138 @@
 \maketitle
 
 \begin{problem}{1}
+	A minesweeper world is a rectangular grid of N squares with M invisible mines scattered among them.
+	Any square may be probed by the agent; instant death follows if a mine is probed.
+	Minesweeper indicates the presence of mines by revealing, in each probed square, the number of mines that are directly or diagonally adjacent.
+	The goal is to have probed every unmined square.
+	\begin{enumerate}
+		\item Let $X_{i,j}$ be true iff square $[i,j]$ contains a mine.
+			Write down the assertion that there are exactly two mines adjacent to $[1,1]$ as a sentence involving some logical combination of $X_{i,j}$ propositions.
+			Assume that the lower left corner of the grid is $[0,0]$.
+			Hint: You do not have to write out the disjunction of 28 conjuncts here; Generate one and explain the rest.
+
+			\vspace{0.25cm}
+			Exactly two mines are adjacent to $[1,1]$: $C_1 \vee C_2 \vee \dots \vee C_{28}$ where each $C_i$ is one
+			way to choose 2 adjacent squares having a mine out of 8 and the adjacent squares are
+			$[i,j]$ such that $0 \le i,j \le 2$, $i=1 \implies j \neq 1$, and $j=1 \implies i \neq 1$.
+			For example $C_1$ could be $\left(X_{0,0} \wedge X_{0,1} \wedge \neg X_{0,2} \wedge \dots \wedge \neg X_{2,2}\right)$.
+		\item Generalize the above assertion by explaining how to construct a CNF sentence asserting that $k$ of $n$ neighbors contain mines.
+			You do not have to give a complete sentence here.
+			Just explain how the assertion would look like.
+
+			\vspace{0.25cm}
+			The sentence would be a disjunction of ${{n}\choose{k}}$ conjuncts.
+			Each conjunct would be a distinct selection of $k$ neighbors having mines, $X_{i,j}$,
+			and $n-k$ neighbors without mines, $\neg X_{k,l}$.
+		\item Explain exactly how an agent can use DPLL to prove that a given square does (or does not) contain a mine,
+			ignoring the global constraint that there are exactly M mines in all.
+			(You do not have to explain how DPLL works.)
+
+			\vspace{0.25cm}
+	\end{enumerate}
+\end{problem}
+\begin{problem}{2}
+	Knowledge representation in first-order logic.
+	Use the unary predicates $Male(x)$, $Female(x)$, $Vegetarian(x)$, $Butcher(x)$
+	and the binary predicate $Likes(x,y)$ to express the content of the following sentences:
+	\begin{enumerate}
+		\item No man is both a butcher and a vegetarian.
+
+			\vspace{0.25cm}
+			%$\forall x ~ Male(x) \implies \neg \left(Butcher(x) \wedge Vegetarian(x)\right)$
+			$\neg \exists x ~ Male(x) \implies \left(Butcher(x) \wedge Vegetarian(x)\right)$
+		\item All men except butchers like vegetarians.
+
+			\vspace{0.25cm}
+			$\forall x \exists y ~ \left( Male(x) \wedge \neg Butcher(x)\right) \implies \left( Likes(x,y) \wedge Vegetarian(y)\right)$
+		\item  The only vegetarian butchers are women. 
+
+			\vspace{0.25cm}
+			$\forall x ~ \left( Vegetarian(x) \wedge Butcher(x)\right) \implies Female(x)$
+		\item No man likes a woman who is a vegetarian.
+
+			\vspace{0.25cm}
+			%$\forall x,y ~ Male(x) \implies \left(Female(y) \wedge Vegetarian(y) \wedge \neg Likes(x,y) \right)$
+			$\neg \exists x,y ~ \left(Male(x) \wedge Female(y)\right) \implies \left(Likes(x,y) \wedge Vegetarian(y)\right)$
+		\item No woman likes a man who does not like all vegetarians.
+
+			\vspace{0.25cm}
+			%$\neg \exists z \left(\exists x,y ~ \left(Male(x) \wedge Vegetarian(y)\right) \implies \neg Likes(x,y)\right)$
+			$\neg \exists x,y,z ~ \left(Female(x) \wedge Male(y) \wedge Vegetarian(z)\right) \implies \left(Likes(x,y) \wedge \neg Likes(y,z)\right)$
+	\end{enumerate}
+\end{problem}
+\begin{problem}{3}
+	Knowledge representation in first-order logic.
+	Represent the following sentences in first-order logic, using a consistent vocabulary (which you must define):
+	\begin{enumerate}
+		\item The best score in CS683 is always higher than the best score in CS610.
+
+			\vspace{0.25cm}
+			Unary predicates: $CS683best(x)$, $CS610best(x)$.
+			Binary predicate: $higher(x,y)$.
+
+			$\forall x,y ~ \left(CS683best(x) \wedge CS610best(y)\right) \implies higher(x,y)$
+		\item No one in this neighborhood buys flood insurance.
+
+			\vspace{0.25cm}
+			Unary predicates: $InNeighborhood(x)$, $BuysFloodInsurance(x)$.
+
+			$\neg \exists x ~ InNeighborhood(x) \implies BuysFloodInsurance(x)$.
+		\item None of the President's aides has issued this statement.
+
+			\vspace{0.25cm}
+			Unary predicates: $PresidentAide(x)$, $Statement(x)$.
+			Binary predicate: $Issued(x,y)$.
+
+			$\neg \exists x,y ~ \left(PresidentAide(x) \wedge Statement(y)\right) \implies Issued(x,y)$.
+		\item The President's aides issued conflicting statements.
+
+			\vspace{0.25cm}
+			Unary predicates: $PresidentAide(x)$ (from previous), $ConflictingStatement(x)$.
+			Binary predicate: $Issued(x,y)$ (from previous).
+
+			$\exists x,y ~ \left(PresidentAide(x) \wedge ConflictingStatement(y)\right) \implies Issued(x,y)$.
+		\item Politicians can fool some of the people all the time, and they can fool all the people some of the time, but they can't fool all of the people all of the time.
+
+			\vspace{0.25cm}
+			Unary predicates: $Politician(x)$, $Person(x)$.
+			Ternary predicate: $Fool(x,y,z)$, where $x$ fools $y$ at time $z$.
+
+			$\forall x,z,a,c,d ~ \exists y,b ~ Politician(x) \implies \left(Fool(x,y,z) \wedge Fool(x,a,b) \wedge \neg Fool(x,c,d)\right)$
+	\end{enumerate}
+\end{problem}
+\begin{problem}{4}
+	Backward-chaining inference. Consider the following set of Horn sentences:
+	$\forall x,y,z ~ Greater(x,y) \wedge Greater(y,z) \implies Greater(x,z)$ \\
+	$\forall x ~ A(x) \implies Greater(Score(x),90)$ \\
+	$\forall x ~ Greater(Score(x),90) \implies A(x)$ \\
+	$A(Alex)$ \\
+	$Greater(Score(Deb),Score(Alex))$
+	Prove $A(Deb)$ using backward-chaining.
+
+	\vspace{0.25cm}
+	$Greater(Score(Deb),90) \implies A(Deb)$ \\
+	$Greater(Score(Deb),Score(Alex)) \wedge Greater(Score(Alex),90) \implies Greater(Score(Deb),90)$ \\
+	$A(Alex) \implies Greater(Score(Alex),90)$
+\end{problem}
+\begin{problem}{4}
+	Consider the following crime:
+	\textit{
+		Vincent has been murdered, and Arthur, Bertram, and Carleton are suspects.
+		Arthur says he did not do it.
+		He says that Bertram was the victim's friend but that Carleton hated the victim.
+		Bertram says he was out of town the day of the murder, and besides he didn't even know the guy.
+		Carleton says he is innocent and he saw Arthur and Bertram with the victim just before the murder.
+		Assuming that everyone - except possibly for the murderer --- is telling the truth,
+		use resolution to solve the crime.
+	}
+	\begin{enumerate}
+		\item Define a suitable vocabulary and represent all the facts using first-order logic.
+			You may need to add some general knowledge that is not explicitly stated to be able to
+			capture everything.
+		\item Use resolution to solve the crime.
+			Explain your approach and show the resolution proof.
+	\end{enumerate}
 \end{problem}
 
 \end{document}
