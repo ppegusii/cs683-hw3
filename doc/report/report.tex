@@ -135,27 +135,67 @@
 	Prove $A(Deb)$ using backward-chaining.
 
 	\vspace{0.25cm}
+	\noindent
 	$Greater(Score(Deb),90) \implies A(Deb)$ \\
 	$Greater(Score(Deb),Score(Alex)) \wedge Greater(Score(Alex),90) \implies Greater(Score(Deb),90)$ \\
 	$A(Alex) \implies Greater(Score(Alex),90)$
 \end{problem}
-\begin{problem}{4}
-	Consider the following crime:
+\begin{problem}{5}
+	Consider the following crime: \\
 	\textit{
 		Vincent has been murdered, and Arthur, Bertram, and Carleton are suspects.
 		Arthur says he did not do it.
 		He says that Bertram was the victim's friend but that Carleton hated the victim.
 		Bertram says he was out of town the day of the murder, and besides he didn't even know the guy.
 		Carleton says he is innocent and he saw Arthur and Bertram with the victim just before the murder.
-		Assuming that everyone - except possibly for the murderer --- is telling the truth,
+		Assuming that everyone - except possibly for the murderer - is telling the truth,
 		use resolution to solve the crime.
 	}
 	\begin{enumerate}
 		\item Define a suitable vocabulary and represent all the facts using first-order logic.
 			You may need to add some general knowledge that is not explicitly stated to be able to
 			capture everything.
+
+			\vspace{0.25cm}
+			Unary predicates: $FriendVictim(x)$, $HateVictim(x)$, $OutOfTown(x)$, $KnowVictim(x)$,
+			$Innocent(x)$, $WithVictim(x)$.
+			Abbreviations in order: $FV(x)$, $HV(x)$, $OOT(x)$, $KV(x)$, $I(x)$, $WV(x)$.
+
+			General knowledge: $\forall x ~ FV(x) \implies KV(x)$, \\
+			$\forall x ~ OOT(x) \implies \neg WV(x)$.
+
+			Let $A,B,C$, be Arthur, Bertram, and Carleton, respectively.
+			Statements:
+			\begin{description}
+				\item[A] $I(A)$, $FV(B)$, $HV(C)$
+				\item[B] $OOT(B)$, $\neg KV(B)$
+				\item[C] $I(C)$, $WV(A)$, $WV(B)$
+			\end{description}
 		\item Use resolution to solve the crime.
 			Explain your approach and show the resolution proof.
+
+			\vspace{0.25cm}
+			The approach finds the murderer by proving that two suspects' statements are consistent with each other,
+			while the third suspect's statements are inconsistent with either of the other suspects' statements.
+			\begin{description}
+				\item[AB]
+					\begin{enumerate}
+						\item Resolving $\neg FV(x) \vee KV(x)$ and $FV(B)$ with $\theta={x/B}$ yields
+							$KV(x)$.
+						\item Resolving $KV(x)$ and $\neg KV(B)$ with $\theta={x/B}$ yields nothing.
+							Meaning it is unsatisfiable.
+					\end{enumerate}
+				\item[AC]
+					Their statements do not contradict.
+				\item[BC]
+					\begin{enumerate}
+						\item Resolving $\neg OOT(x) \vee \neg WV(x)$ and $OOT(B)$ with $\theta={x/B}$
+							yields $\neg WV(x)$.
+						\item Resolving $\neg WV(x)$ and $\neg WV(B)$ with $\theta={x/B}$ yields nothing.
+							Meaning it is unsatisfiable.
+					\end{enumerate}
+			\end{description}
+			Therefore, $B$ is the murderer.
 	\end{enumerate}
 \end{problem}
 
